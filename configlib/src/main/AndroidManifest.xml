@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.config">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application>
+
+        <service
+            android:name=".network.NetworkSchedulerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <provider
+            android:authorities="${applicationId}.ConfigProvider"
+            android:exported="false"
+            android:enabled="true"
+            android:name=".ConfigProvider" />
+
+    </application>
+
+</manifest>
