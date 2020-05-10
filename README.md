@@ -7,7 +7,7 @@ Android library that manages your app's networking with ease.
 ## Setup
 Add the token to $HOME/.gradle/gradle.properties
 ``` gradle
-    authToken=jp_65cg6e0t51u6mt3uoif46rva4
+    authToken=jp_9hht9fh0t4idhlm9m7v6u2mbj6
 ```
 
 Add this to your project build.gradle
@@ -30,7 +30,7 @@ allprojects {
 [![](https://jitpack.io/v/org.bitbucket.amitresearchdev/config.svg)](https://jitpack.io/#org.bitbucket.amitresearchdev/config)
 ```gradle
 dependencies {
-        implementation 'org.bitbucket.amitresearchdev:config:x.y'
+        implementation 'org.bitbucket.droidhelios:api-config:x.y'
 }
 ```
 
