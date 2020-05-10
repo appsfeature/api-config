@@ -42,7 +42,7 @@ import static com.config.config.NetworkStatusCode.NOT_FOUND;
 import static com.config.config.NetworkStatusCode.SERVICE_UNAVAILABLE;
 
 /**
- * Created by Amit on 3/28/2018.
+ * @author Created by Abhijit on 3/28/2018.
  */
 
 public class ConfigManager {
