@@ -10,10 +10,10 @@ import retrofit2.http.Query;
 
 public interface ApiConfig {
 
-    @GET("config/v2/get-config")
-    Call<ConfigModel> getConfig(@Query("id") String pkg_id, @Query("app_version") String appVersion);
+    @GET("config/api/v1/get-config")
+    Call<ConfigModel> getConfig(@Query("package_name") String pkg_id, @Query("app_version") String appVersion);
 
-    @GET("api/v1/get-new-backup-config")
-    Call<ConfigModel> getConfigBug(@Query("application_id") String pkg_id, @Query("error") String error, @Query("app_version") String appVersion);
+    @GET("config/api/v1/get-new-backup-config")
+    Call<ConfigModel> getConfigBug(@Query("package_name") String pkg_id, @Query("error") String error, @Query("app_version") String appVersion);
 
 }
