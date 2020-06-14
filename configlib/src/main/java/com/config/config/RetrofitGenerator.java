@@ -1,7 +1,6 @@
 package com.config.config;
 
 import com.config.BuildConfig;
-import com.config.util.SupportUtil;
 
 import java.io.IOException;
 

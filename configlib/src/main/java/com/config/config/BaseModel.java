@@ -12,9 +12,15 @@ public class BaseModel {
     @SerializedName("status")
     @Expose
     private String status;
+
     @SerializedName("call_config")
     @Expose
     private String call_config;
+
+    @SerializedName("message")
+    @Expose
+    private String message;
+
     @SerializedName("data")
     @Expose
     private Object data;
@@ -41,5 +47,13 @@ public class BaseModel {
 
     public void setCall_config(String call_config) {
         this.call_config = call_config;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

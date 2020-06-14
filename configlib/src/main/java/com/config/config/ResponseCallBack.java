@@ -1,7 +1,7 @@
 package com.config.config;
 
 import com.config.util.Logger;
-import com.config.util.SupportUtil;
+import com.config.util.ConfigUtil;
 
 import org.json.JSONException;
 
@@ -40,7 +40,7 @@ public class ResponseCallBack implements Callback<BaseModel> {
             if (responseCode == 200) {
                 if (response.body() != null && response.body() instanceof BaseModel) {
                     BaseModel baseModel = (BaseModel) response.body();
-                    boolean callConfig = !SupportUtil.isEmptyOrNull(baseModel.getCall_config())
+                    boolean callConfig = !ConfigUtil.isEmptyOrNull(baseModel.getCall_config())
                             && baseModel.getCall_config().equals(ConfigConstant.TRUE);
                     if (callConfig && !ConfigManager.isCallConfig()) {
                         ConfigManager.setIsCallConfig(true);
@@ -51,12 +51,12 @@ public class ResponseCallBack implements Callback<BaseModel> {
                             configManager.callConfig(true, true, bug);
                         }
                     }
-                    boolean status = !callConfig && !SupportUtil.isEmptyOrNull(baseModel.getStatus())
+                    boolean status = !callConfig && !ConfigUtil.isEmptyOrNull(baseModel.getStatus())
                             && baseModel.getStatus().equals(ConfigConstant.SUCCESS);
                     String s = ConfigManager.getGson().toJson(baseModel.getData());
                     if (onNetworkCall != null) {
                         Logger.i( "ApiEndPoint:" + endPoint + " onResponse s -- " + s);
-                        onNetworkCall.onComplete(status, status ? s : "");
+                        onNetworkCall.onComplete(status, status ? s : baseModel.getMessage());
                     }
                 }
             } else if (responseCode == INTERNAL_SERVER_ERROR || responseCode == NOT_FOUND

@@ -18,7 +18,7 @@ import com.config.R;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class SupportUtil {
+public class ConfigUtil {
     public static boolean isEmptyOrNull(String s) {
         return (s == null || TextUtils.isEmpty(s));
     }

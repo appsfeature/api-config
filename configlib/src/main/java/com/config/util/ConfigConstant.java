@@ -1,6 +1,6 @@
 package com.config.util;
 
-public interface AppConstant {
+public interface ConfigConstant {
     String APP_UPDATE = ".app_update";
     String TITLE = "Title" ;
     String TYPE = "type" ;

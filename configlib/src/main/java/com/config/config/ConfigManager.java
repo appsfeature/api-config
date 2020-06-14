@@ -11,10 +11,10 @@ import android.os.Build;
 import com.config.BuildConfig;
 import com.config.ConfigProvider;
 import com.config.network.NetworkMonitor;
-import com.config.util.AppConstant;
-import com.config.util.AppPreferences;
+import com.config.util.ConfigConstant;
+import com.config.util.ConfigPreferences;
 import com.config.util.Logger;
-import com.config.util.SupportUtil;
+import com.config.util.ConfigUtil;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -49,7 +49,7 @@ public class ConfigManager {
 
     @SuppressLint("StaticFieldLeak") private static ConfigManager configManager;
     private Context context;
-    private ConfigPreferences configPreferences;
+    private com.config.config.ConfigPreferences configPreferences;
     private int backupConfigCallCount = 0;
     private HashMap<String, String> hostAlias;
     private HashMap<String, ApiInterface> apiInterfaceHashMap;
@@ -103,7 +103,7 @@ public class ConfigManager {
 
     public static ConfigManager getInstance() {
         if(configManager == null){
-            configManager = getInstance(ConfigProvider.context, SupportUtil.getSecurityCode(ConfigProvider.context));
+            configManager = getInstance(ConfigProvider.context, ConfigUtil.getSecurityCode(ConfigProvider.context));
         }
         return configManager;
     }
@@ -126,12 +126,12 @@ public class ConfigManager {
 
     private void sendBroadCast() {
         Logger.d("Config loaded : success");
-        context.sendBroadcast(new Intent(context.getPackageName() + ConfigConstant.CONFIG_LOADED));
+        context.sendBroadcast(new Intent(context.getPackageName() + com.config.config.ConfigConstant.CONFIG_LOADED));
     }
 
     private void sendBroadCastFailure() {
         Logger.e("Config loaded : failure");
-        context.sendBroadcast(new Intent(context.getPackageName() + ConfigConstant.CONFIG_FAILURE));
+        context.sendBroadcast(new Intent(context.getPackageName() + com.config.config.ConfigConstant.CONFIG_FAILURE));
     }
 
     private ConfigManager(Context context, String securityCode, boolean isDebug) {
@@ -143,20 +143,20 @@ public class ConfigManager {
             this.context = context;
             this.securityCode = securityCode;
             this.isDebug = isDebug;
-            configPreferences = new ConfigPreferences(context);
+            configPreferences = new com.config.config.ConfigPreferences(context);
             networkMonitor = getNetworkMonitor();
         }
     }
 
     public void setConfigHost(Context context , String host){
         if ( context != null && !TextUtils.isEmpty(host)) {
-            getConfigPreferences(context).putString(ConfigConstant.CONFIG_HOST, host);
+            getConfigPreferences(context).putString(com.config.config.ConfigConstant.CONFIG_HOST, host);
         }
     }
 
-    private ConfigPreferences getConfigPreferences(Context context){
+    private com.config.config.ConfigPreferences getConfigPreferences(Context context){
         if ( configPreferences == null && context != null ){
-            configPreferences = new ConfigPreferences(context);
+            configPreferences = new com.config.config.ConfigPreferences(context);
         }
         return configPreferences;
     }
@@ -178,17 +178,17 @@ public class ConfigManager {
     }
 
     private String getHostConfigPath() {
-        String s = configPreferences.getString(ConfigConstant.CONFIG_HOST);
-        if (SupportUtil.isEmptyOrNull(s)) {
-            s = ConfigConstant.CONFIG_HOST_URL;
+        String s = configPreferences.getString(com.config.config.ConfigConstant.CONFIG_HOST);
+        if (ConfigUtil.isEmptyOrNull(s)) {
+            s = com.config.config.ConfigConstant.CONFIG_HOST_URL;
         }
         return s;
     }
 
     private String getBackupHostConfigPath() {
-        String s = configPreferences.getString(ConfigConstant.CONFIG_HOST_BACKUP);
-        if (SupportUtil.isEmptyOrNull(s)) {
-            s = ConfigConstant.CONFIG_HOST_BACKUP_URL;
+        String s = configPreferences.getString(com.config.config.ConfigConstant.CONFIG_HOST_BACKUP);
+        if (ConfigUtil.isEmptyOrNull(s)) {
+            s = com.config.config.ConfigConstant.CONFIG_HOST_BACKUP_URL;
         }
         return s;
     }
@@ -200,7 +200,7 @@ public class ConfigManager {
     }
 
     public void callConfig(final boolean isMain, boolean isBug, final String bug, final Callable<Void> function) {
-        if (SupportUtil.isConnected(context) && !isConfigLoading) {
+        if (ConfigUtil.isConnected(context) && !isConfigLoading) {
             isConfigLoading = true;
             String host = isMain ? getHostConfigPath() : getBackupHostConfigPath();
             Retrofit retrofit = RetrofitGenerator.getClient(host, securityCode, isDebug);
@@ -210,7 +210,7 @@ public class ConfigManager {
                     call = retrofit.create(ApiConfig.class).getConfig(context.getPackageName(), getAppVersion());
                 } else if (isMain && isBug) {
                     call = retrofit.create(ApiConfig.class).getConfigBug(context.getPackageName(), bug, getAppVersion());
-                } else if (backupConfigCallCount <= ConfigConstant.BACKUP_CONFIG_CALL_COUNT) {
+                } else if (backupConfigCallCount <= com.config.config.ConfigConstant.BACKUP_CONFIG_CALL_COUNT) {
                     call = retrofit.create(ApiConfigBackup.class).getConfig(context.getPackageName(), bug, getAppVersion());
                     backupConfigCallCount++;
                 }
@@ -306,7 +306,7 @@ public class ConfigManager {
             object.putOpt("response_code", code);
             object.putOpt("response_msg", getErrorTypeMsg(code));
             object.putOpt("timestamp", getFormatDate(System.currentTimeMillis()));
-            object.putOpt("device_id", SupportUtil.getDeviceId(context));
+            object.putOpt("device_id", ConfigUtil.getDeviceId(context));
             object.putOpt("msg", msg);
             object.putOpt("api_failure", apiMsg);
             object.putOpt("api", api);
@@ -331,7 +331,7 @@ public class ConfigManager {
             object.putOpt("response_code", code);
             object.putOpt("response_msg", getErrorTypeMsg(code));
             object.putOpt("timestamp", DateFormat.getInstance().format(new Date(System.currentTimeMillis())));
-            object.putOpt("device_id", SupportUtil.getDeviceId(context));
+            object.putOpt("device_id", ConfigUtil.getDeviceId(context));
             object.putOpt("msg", msg);
             object.putOpt("api_failure", apiMsg);
         } catch (JSONException e) {
@@ -353,7 +353,7 @@ public class ConfigManager {
 
     public void getData(final int type, final String host, final String endPoint, final Map<String, String> param
             , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCall onNetworkCall) {
-        if (context != null && SupportUtil.isConnected(context)) {
+        if (context != null && ConfigUtil.isConnected(context)) {
             if (param != null) {
                 if (param.get("application_id") == null) {
                     param.put("application_id", context.getPackageName());
@@ -423,7 +423,7 @@ public class ConfigManager {
 
     public void getDataDebug1(int type, String host, final String endPoint, Map<String, String> param
             , final OnNetworkCall onNetworkCall) {
-        if (SupportUtil.isConnected(context) && isConfigLoaded) {
+        if (ConfigUtil.isConnected(context) && isConfigLoaded) {
             ApiInterface apiInterface = getApiInterface(host, endPoint);
             if (apiInterface != null) {
                 Logger.i("getData -- " + endPoint);
@@ -445,16 +445,16 @@ public class ConfigManager {
             , RequestBody requestBody, MultipartBody.Part multipartBody) {
         Call<BaseModel> call;
         switch (callType) {
-            case ConfigConstant.CALL_TYPE_POST:
+            case com.config.config.ConfigConstant.CALL_TYPE_POST:
                 call = apiInterface.postData(endPoint, param);
                 break;
-            case ConfigConstant.CALL_TYPE_POST_FORM:
+            case com.config.config.ConfigConstant.CALL_TYPE_POST_FORM:
                 call = apiInterface.postDataForm(endPoint, param);
                 break;
-            case ConfigConstant.CALL_TYPE_POST_FILE:
+            case com.config.config.ConfigConstant.CALL_TYPE_POST_FILE:
                 call = apiInterface.postDataForm(endPoint, param, requestBody, multipartBody);
                 break;
-            case ConfigConstant.CALL_TYPE_GET:
+            case com.config.config.ConfigConstant.CALL_TYPE_GET:
             default:
                 call = apiInterface.getData(endPoint, param);
                 break;
@@ -512,15 +512,15 @@ public class ConfigManager {
     private void handleConfigResponse(ConfigModel model) {
         if (model != null) {
             isConfigLoaded = true;
-            configPreferences.putString(ConfigConstant.CONFIG_HOST, model.getConfig_host());
-            configPreferences.putString(ConfigConstant.CONFIG_HOST_BACKUP, model.getBackup_host());
+            configPreferences.putString(com.config.config.ConfigConstant.CONFIG_HOST, model.getConfig_host());
+            configPreferences.putString(com.config.config.ConfigConstant.CONFIG_HOST_BACKUP, model.getBackup_host());
             handleHostSection(model.getHost_section());
             Logger.i("Config is loaded");
             apiJsonException = new HashMap<>();
             apiErrorCode = new HashMap<>();
 
             handleAppVersion(model.getApp_version());
-            networkMonitor.setConfigLoaded(isConfigLoaded, SupportUtil.isConnected(context));
+            networkMonitor.setConfigLoaded(isConfigLoaded, ConfigUtil.isConnected(context));
         }
     }
 
@@ -528,7 +528,7 @@ public class ConfigManager {
         if (model != null) {
             int myVersion = Integer.parseInt(getAppVersion());
             try {
-                int minSupportVersion = SupportUtil.isEmptyOrNull(model.getMin_version()) ? 0 : Integer.parseInt(model.getMin_version());
+                int minSupportVersion = ConfigUtil.isEmptyOrNull(model.getMin_version()) ? 0 : Integer.parseInt(model.getMin_version());
                 if (myVersion != 0 && minSupportVersion != 0 && myVersion <= minSupportVersion) {
                     sendBroadCast(model, false);
                 }
@@ -537,17 +537,17 @@ public class ConfigManager {
             }
             try {
                 String s = model.getNot_supported_version();
-                if (!SupportUtil.isEmptyOrNull(s)) {
+                if (!ConfigUtil.isEmptyOrNull(s)) {
                     if (s.contains(",")) {
                         String[] arr = s.split(",");
                         for (String s1 : arr) {
-                            int notSupportVersion = SupportUtil.isEmptyOrNull(s1) ? 0 : Integer.parseInt(s1);
+                            int notSupportVersion = ConfigUtil.isEmptyOrNull(s1) ? 0 : Integer.parseInt(s1);
                             if (myVersion != 0 && notSupportVersion != 0 && myVersion == notSupportVersion) {
                                 sendBroadCast(model, false);
                             }
                         }
                     } else {
-                        int notSupportVersion = SupportUtil.isEmptyOrNull(s) ? 0 : Integer.parseInt(s);
+                        int notSupportVersion = ConfigUtil.isEmptyOrNull(s) ? 0 : Integer.parseInt(s);
                         if (myVersion != 0 && notSupportVersion != 0 && myVersion == notSupportVersion) {
                             sendBroadCast(model, false);
                         }
@@ -558,7 +558,7 @@ public class ConfigManager {
             }
             int currentVersion = 0;
             try {
-                currentVersion = SupportUtil.isEmptyOrNull(model.getCurrent_version()) ? 0 : Integer.parseInt(model.getCurrent_version());
+                currentVersion = ConfigUtil.isEmptyOrNull(model.getCurrent_version()) ? 0 : Integer.parseInt(model.getCurrent_version());
             } catch (NumberFormatException e) {
                 e.printStackTrace();
             }
@@ -569,9 +569,9 @@ public class ConfigManager {
     }
 
     private void sendBroadCast(AppVersionModel model, boolean type) {
-        Intent intent = new Intent(context.getPackageName() + AppConstant.APP_UPDATE);
-        intent.putExtra(AppConstant.TITLE, SupportUtil.isEmptyOrNull(model.getMsg()) ? AppConstant.MSG_UPDATE : model.getMsg());
-        intent.putExtra(AppConstant.TYPE, type);
+        Intent intent = new Intent(context.getPackageName() + ConfigConstant.APP_UPDATE);
+        intent.putExtra(ConfigConstant.TITLE, ConfigUtil.isEmptyOrNull(model.getMsg()) ? ConfigConstant.MSG_UPDATE : model.getMsg());
+        intent.putExtra(ConfigConstant.TYPE, type);
         context.sendBroadcast(intent);
     }
 
@@ -585,18 +585,18 @@ public class ConfigManager {
             ApiInterface apiInterface;
             apiHostHashMap = new HashMap<>();
             for (HostSectionModel model : models) {
-                connectHostHashMap.put(model.getTitle(), model.getConnect_to_host().equalsIgnoreCase(ConfigConstant.TRUE));
-                if (!SupportUtil.isEmptyOrNull(model.getConnect_to_host())
-                        && model.getConnect_to_host().equalsIgnoreCase(ConfigConstant.TRUE)) {
+                connectHostHashMap.put(model.getTitle(), model.getConnect_to_host().equalsIgnoreCase(com.config.config.ConfigConstant.TRUE));
+                if (!ConfigUtil.isEmptyOrNull(model.getConnect_to_host())
+                        && model.getConnect_to_host().equalsIgnoreCase(com.config.config.ConfigConstant.TRUE)) {
                     hostAlias.put(model.getTitle(), model.getHost());
                     Logger.i("HOST : " + model.getTitle());
-                    if (model.getTitle().equalsIgnoreCase(ConfigConstant.HOST_DOWNLOAD_PDF)) {
+                    if (model.getTitle().equalsIgnoreCase(com.config.config.ConfigConstant.HOST_DOWNLOAD_PDF)) {
                         Logger.i("HOST_DOWNLOAD_PDF : " + model.getHost());
-                        AppPreferences.setBaseUrl(context, model.getHost());
-                        Logger.i("HOST_DOWNLOAD_PDF Pref : " + AppPreferences.getBaseUrl(context));
+                        ConfigPreferences.setBaseUrl(context, model.getHost());
+                        Logger.i("HOST_DOWNLOAD_PDF Pref : " + ConfigPreferences.getBaseUrl(context));
                     }
-                    if (model.getTitle().equalsIgnoreCase(ConfigConstant.HOST_TRANSLATOR)) {
-                        AppPreferences.setBaseUrl_3(context, model.getHost());
+                    if (model.getTitle().equalsIgnoreCase(com.config.config.ConfigConstant.HOST_TRANSLATOR)) {
+                        ConfigPreferences.setBaseUrl_3(context, model.getHost());
                     }
                     configPreferences.putString(model.getTitle(), model.getHost());
                     apiInterface = RetrofitGenerator.getClient(model.getHost(), securityCode, isDebug).create(ApiInterface.class);

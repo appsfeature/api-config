@@ -3,7 +3,7 @@ package com.config.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class AppPreferences {
+public class ConfigPreferences {
 
     private static SharedPreferences sharedPreferences;
 
