@@ -21,7 +21,7 @@ public class BaseModel {
     @Expose
     private String message;
 
-    @SerializedName(value="data", alternate={"data", "result"})
+    @SerializedName(value="data", alternate={"result"})
     @Expose
     private Object data;
 
