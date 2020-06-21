@@ -515,7 +515,7 @@ public class ConfigManager {
         void onComplete(boolean status, String data);
     }
 
-    public interface OnNetworkCallSimple {
+    public interface OnNetworkCallBasic {
         void onComplete(boolean status, String data);
     }
 
@@ -692,12 +692,12 @@ public class ConfigManager {
     //***************************************** Simple Network Call without host and fix model**************************
 
     public void getData(final int type, final String endPoint, final Map<String, String> param
-            , final OnNetworkCallSimple onNetworkCall) {
+            , final OnNetworkCallBasic onNetworkCall) {
         getData(type, endPoint, param, null, null, onNetworkCall);
     }
 
     public void getData(final int type, final String endPoint, final Map<String, String> param
-            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCallSimple onNetworkCall) {
+            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCallBasic onNetworkCall) {
         if (context != null && ConfigUtil.isConnected(context)) {
             if (param != null) {
                 if (param.get("application_id") == null) {
@@ -715,12 +715,12 @@ public class ConfigManager {
     }
 
     public void getDataRelease(int type, final String endPoint, Map<String, String> param
-            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCallSimple onNetworkCall) {
+            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCallBasic onNetworkCall) {
         ApiInterfaceBasic apiInterface = getHostInterfaceBasic();
         if (apiInterface != null) {
             Logger.i("getData -- " + endPoint);
-            Call<String> call = getCall(type, apiInterface, endPoint, param, requestBody, multipartBody);
-            call.enqueue(new ResponseCallBackBasic(onNetworkCall, endPoint));
+            getCall(type, apiInterface, endPoint, param, requestBody, multipartBody)
+                    .enqueue(new ResponseCallBackBasic(onNetworkCall, endPoint));
         } else if (onNetworkCall != null) {
             onNetworkCall.onComplete(false, "");
             Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint);
@@ -728,9 +728,9 @@ public class ConfigManager {
     }
 
 
-    private Call<String> getCall(int callType, ApiInterfaceBasic apiInterface, String endPoint, Map<String, String> param
+    private Call<Object> getCall(int callType, ApiInterfaceBasic apiInterface, String endPoint, Map<String, String> param
             , RequestBody requestBody, MultipartBody.Part multipartBody) {
-        Call<String> call;
+        Call<Object> call;
         switch (callType) {
             case com.config.config.ConfigConstant.CALL_TYPE_POST:
                 call = apiInterface.postData(endPoint, param);

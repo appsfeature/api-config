@@ -1,6 +1,5 @@
 package com.config.config;
 
-import com.config.util.ConfigUtil;
 import com.config.util.Logger;
 
 import retrofit2.Call;
@@ -12,12 +11,12 @@ import retrofit2.Response;
  * Created by Amit on 4/10/2018.
  */
 
-public class ResponseCallBackBasic implements Callback<String> {
+public class ResponseCallBackBasic implements Callback<Object> {
 
-    private ConfigManager.OnNetworkCallSimple onNetworkCall;
+    private ConfigManager.OnNetworkCallBasic onNetworkCall;
     private String endPoint;
 
-    public ResponseCallBackBasic(ConfigManager.OnNetworkCallSimple onNetworkCall, String endPoint) {
+    public ResponseCallBackBasic(ConfigManager.OnNetworkCallBasic onNetworkCall, String endPoint) {
         this.onNetworkCall = onNetworkCall;
         this.endPoint = endPoint;
     }
@@ -26,14 +25,15 @@ public class ResponseCallBackBasic implements Callback<String> {
     }
 
     @Override
-    public void onResponse(Call<String> call, Response<String> response) {
+    public void onResponse(Call<Object> call, Response<Object> response) {
         if (response != null && response.code() != 0) {
             int responseCode = response.code();
             if (responseCode == 200) {
                 if (response.body() != null) {
                     if (onNetworkCall != null) {
                         Logger.i( "ApiEndPoint:" + endPoint + " onResponse s -- " + response.body());
-                        onNetworkCall.onComplete(true, response.body());
+                        String s = ConfigManager.getGson().toJson(response.body());
+                        onNetworkCall.onComplete(true, s);
                     }
                 }else {
                     if (onNetworkCall != null) {
@@ -57,7 +57,7 @@ public class ResponseCallBackBasic implements Callback<String> {
     }
 
     @Override
-    public void onFailure(Call<String> call, Throwable t) {
+    public void onFailure(Call<Object> call, Throwable t) {
         if (onNetworkCall != null) {
             onNetworkCall.onComplete(false, "");
         }

@@ -21,17 +21,17 @@ import retrofit2.http.QueryMap;
 public interface ApiInterfaceBasic {
 
     @GET("{endpoint}")
-    Call<String> getData(@Path("endpoint") String endpoint, @QueryMap Map<String, String> options);
+    Call<Object> getData(@Path("endpoint") String endpoint, @QueryMap Map<String, String> options);
 
     @POST("{endpoint}")
-    Call<String> postData(@Path("endpoint") String endpoint, @QueryMap Map<String, String> options);
+    Call<Object> postData(@Path("endpoint") String endpoint, @QueryMap Map<String, String> options);
 
     @FormUrlEncoded
     @POST("{endpoint}")
-    Call<String> postDataForm(@Path("endpoint") String endpoint, @FieldMap Map<String, String> options);
+    Call<Object> postDataForm(@Path("endpoint") String endpoint, @FieldMap Map<String, String> options);
 
     @Multipart
     @POST("{endpoint}")
-    Call<String> postDataForm(@Path("endpoint") String endpoint, @QueryMap Map<String, String> options
+    Call<Object> postDataForm(@Path("endpoint") String endpoint, @QueryMap Map<String, String> options
             , @Part("name") RequestBody requestBody, @Part MultipartBody.Part multipartBody);
 }
