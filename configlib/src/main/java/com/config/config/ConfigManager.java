@@ -47,7 +47,8 @@ import static com.config.config.NetworkStatusCode.SERVICE_UNAVAILABLE;
 
 public class ConfigManager {
 
-    @SuppressLint("StaticFieldLeak") private static ConfigManager configManager;
+    @SuppressLint("StaticFieldLeak")
+    private static ConfigManager configManager;
     private Context context;
     private com.config.config.ConfigPreferences configPreferences;
     private int backupConfigCallCount = 0;
@@ -102,7 +103,7 @@ public class ConfigManager {
     public boolean isDebug = false;
 
     public static ConfigManager getInstance() {
-        if(configManager == null){
+        if (configManager == null) {
             configManager = getInstance(ConfigProvider.context, ConfigUtil.getSecurityCode(ConfigProvider.context));
         }
         return configManager;
@@ -148,14 +149,15 @@ public class ConfigManager {
         }
     }
 
-    public void setConfigHost(Context context , String host){
-        if ( context != null && !TextUtils.isEmpty(host)) {
+    public ConfigManager setConfigHost(Context context, String host) {
+        if (context != null && !TextUtils.isEmpty(host)) {
             getConfigPreferences(context).putString(com.config.config.ConfigConstant.CONFIG_HOST, host);
         }
+        return this;
     }
 
-    private com.config.config.ConfigPreferences getConfigPreferences(Context context){
-        if ( configPreferences == null && context != null ){
+    private com.config.config.ConfigPreferences getConfigPreferences(Context context) {
+        if (configPreferences == null && context != null) {
             configPreferences = new com.config.config.ConfigPreferences(context);
         }
         return configPreferences;
@@ -200,12 +202,12 @@ public class ConfigManager {
     }
 
     public void callConfig(final boolean isMain, boolean isBug, final String bug, final Callable<Void> function) {
-        if (ConfigUtil.isConnected(context) && !isConfigLoading) {
+        if (isEnableConfigManager && ConfigUtil.isConnected(context) && !isConfigLoading) {
             isConfigLoading = true;
             String host = isMain ? getHostConfigPath() : getBackupHostConfigPath();
             Retrofit retrofit = RetrofitGenerator.getClient(host, securityCode, isDebug);
             Call<ConfigModel> call = null;
-            if ( retrofit != null ) {
+            if (retrofit != null) {
                 if (isMain) {
                     call = retrofit.create(ApiConfig.class).getConfig(context.getPackageName(), getAppVersion());
                 } else if (isMain && isBug) {
@@ -283,7 +285,7 @@ public class ConfigManager {
     private String getAppVersion() {
         String appVersion = "0";
         try {
-            if(context!=null) {
+            if (context != null) {
                 PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     appVersion = (int) pInfo.getLongVersionCode() + ""; // avoid huge version numbers and you will be ok
@@ -353,36 +355,40 @@ public class ConfigManager {
 
     public void getData(final int type, final String host, final String endPoint, final Map<String, String> param
             , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCall onNetworkCall) {
-        if (context != null && ConfigUtil.isConnected(context)) {
-            if (param != null) {
-                if (param.get("application_id") == null) {
-                    param.put("application_id", context.getPackageName());
-                }
-                if (param.get("app_version") == null) {
-                    param.put("app_version", getAppVersion());
-                }
-            }
-            if (isConfigLoaded) {
-                if (BuildConfig.DEBUG) {
-                    getDataDebug(type, host, endPoint, param, requestBody, multipartBody, onNetworkCall);
-                } else {
-                    getDataRelease(type, host, endPoint, param, requestBody, multipartBody, onNetworkCall);
-                }
-            } else if (!isConfigLoading) {
-                refreshConfig(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        getData(type, host, endPoint, param, onNetworkCall);
-                        return null;
+        if (!isEnableConfigManager) {
+            getData(type, endPoint, param, requestBody, multipartBody, onNetworkCall);
+        } else {
+            if (context != null && ConfigUtil.isConnected(context)) {
+                if (param != null) {
+                    if (param.get("application_id") == null) {
+                        param.put("application_id", context.getPackageName());
                     }
-                });
+                    if (param.get("app_version") == null) {
+                        param.put("app_version", getAppVersion());
+                    }
+                }
+                if (isConfigLoaded) {
+                    if (BuildConfig.DEBUG) {
+                        getDataDebug(type, host, endPoint, param, requestBody, multipartBody, onNetworkCall);
+                    } else {
+                        getDataRelease(type, host, endPoint, param, requestBody, multipartBody, onNetworkCall);
+                    }
+                } else if (!isConfigLoading) {
+                    refreshConfig(new Callable<Void>() {
+                        @Override
+                        public Void call() throws Exception {
+                            getData(type, host, endPoint, param, onNetworkCall);
+                            return null;
+                        }
+                    });
+                } else if (onNetworkCall != null) {
+                    onNetworkCall.onComplete(false, "");
+                    Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "Config not loaded");
+                }
             } else if (onNetworkCall != null) {
                 onNetworkCall.onComplete(false, "");
-                Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "Config not loaded");
+                Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "No Internet Connection");
             }
-        } else if (onNetworkCall != null) {
-            onNetworkCall.onComplete(false, "");
-            Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "No Internet Connection");
         }
     }
 
@@ -635,6 +641,13 @@ public class ConfigManager {
 
 
     //***************************************** Simple Network Call**************************
+
+    private boolean isEnableConfigManager = true;
+
+    public ConfigManager setEnableConfigManager(boolean enableConfigManager) {
+        this.isEnableConfigManager = enableConfigManager;
+        return this;
+    }
 
     public void getData(final int type, final String endPoint, final Map<String, String> param
             , final OnNetworkCall onNetworkCall) {
