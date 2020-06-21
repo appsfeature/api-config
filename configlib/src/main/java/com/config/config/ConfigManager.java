@@ -5,16 +5,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 import android.os.Build;
+import android.text.TextUtils;
 
 import com.config.BuildConfig;
 import com.config.ConfigProvider;
 import com.config.network.NetworkMonitor;
 import com.config.util.ConfigConstant;
 import com.config.util.ConfigPreferences;
-import com.config.util.Logger;
 import com.config.util.ConfigUtil;
+import com.config.util.Logger;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -633,4 +633,50 @@ public class ConfigManager {
         return networkMonitor;
     }
 
+
+    //***************************************** Simple Network Call**************************
+
+    public void getData(final int type, final String endPoint, final Map<String, String> param
+            , final OnNetworkCall onNetworkCall) {
+        getData(type, endPoint, param, null, null, onNetworkCall);
+    }
+
+    public void getData(final int type, final String endPoint, final Map<String, String> param
+            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCall onNetworkCall) {
+        if (context != null && ConfigUtil.isConnected(context)) {
+            if (param != null) {
+                if (param.get("application_id") == null) {
+                    param.put("application_id", context.getPackageName());
+                }
+                if (param.get("app_version") == null) {
+                    param.put("app_version", getAppVersion());
+                }
+            }
+            getDataRelease(type, endPoint, param, requestBody, multipartBody, onNetworkCall);
+        } else if (onNetworkCall != null) {
+            onNetworkCall.onComplete(false, "");
+            Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "No Internet Connection");
+        }
+    }
+
+    public void getDataRelease(int type, final String endPoint, Map<String, String> param
+            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCall onNetworkCall) {
+        ApiInterface apiInterface = getApiInterface();
+        if (apiInterface != null) {
+            Logger.i("getData -- " + endPoint);
+            Call<BaseModel> call = getCall(type, apiInterface, endPoint, param, requestBody, multipartBody);
+            call.enqueue(new ResponseCallBackSimple(onNetworkCall, endPoint));
+        } else if (onNetworkCall != null) {
+            onNetworkCall.onComplete(false, "");
+            Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint);
+        }
+    }
+
+    public ApiInterface getApiInterface() {
+        return getHostInterface();
+    }
+
+    private ApiInterface getHostInterface() {
+        return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebug).create(ApiInterface.class);
+    }
 }

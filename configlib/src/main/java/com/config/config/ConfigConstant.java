@@ -9,11 +9,10 @@ public interface ConfigConstant {
     String HOST_ANALYTICS = "analytics";
     String CONFIG_LOADED = "_config_loaded";
     String CONFIG_FAILURE = "_config_failure";
-    String HOST_PAID = "gk_paid";
-    String HOST_MAIN = "gk_main_host";
-    String HOST_TRANSLATOR = "translater_host";
+    String HOST_PAID = "paid_host";
+    String HOST_MAIN = "main_host";
+    String HOST_TRANSLATOR = "translator_host";
     String HOST_LOGIN = "login_host";
-    String HOST_LEADER_BOARD = "leaderboard_host";
     String HOST_DOWNLOAD_PDF = "download_pdf";
     String CONFIG_HOST = "config_host";
     String CONFIG_HOST_URL = "http://appsfeature.com/";
