@@ -58,6 +58,10 @@ public class ResponseCallBack implements Callback<BaseModel> {
                         Logger.i( "ApiEndPoint:" + endPoint + " onResponse s -- " + s);
                         onNetworkCall.onComplete(status, status ? s : baseModel.getMessage());
                     }
+                }else {
+                    if (onNetworkCall != null) {
+                        onNetworkCall.onComplete(false, "");
+                    }
                 }
             } else if (responseCode == INTERNAL_SERVER_ERROR || responseCode == NOT_FOUND
                     || responseCode == BAD_GATEWAY || responseCode == SERVICE_UNAVAILABLE

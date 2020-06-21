@@ -515,6 +515,10 @@ public class ConfigManager {
         void onComplete(boolean status, String data);
     }
 
+    public interface OnNetworkCallSimple {
+        void onComplete(boolean status, String data);
+    }
+
     private void handleConfigResponse(ConfigModel model) {
         if (model != null) {
             isConfigLoaded = true;
@@ -640,7 +644,7 @@ public class ConfigManager {
     }
 
 
-    //***************************************** Simple Network Call**************************
+    //***************************************** Simple Network Call without host**************************
 
     private boolean isEnableConfigManager = true;
 
@@ -685,11 +689,76 @@ public class ConfigManager {
         }
     }
 
+    //***************************************** Simple Network Call without host and fix model**************************
+
+    public void getData(final int type, final String endPoint, final Map<String, String> param
+            , final OnNetworkCallSimple onNetworkCall) {
+        getData(type, endPoint, param, null, null, onNetworkCall);
+    }
+
+    public void getData(final int type, final String endPoint, final Map<String, String> param
+            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCallSimple onNetworkCall) {
+        if (context != null && ConfigUtil.isConnected(context)) {
+            if (param != null) {
+                if (param.get("application_id") == null) {
+                    param.put("application_id", context.getPackageName());
+                }
+                if (param.get("app_version") == null) {
+                    param.put("app_version", getAppVersion());
+                }
+            }
+            getDataRelease(type, endPoint, param, requestBody, multipartBody, onNetworkCall);
+        } else if (onNetworkCall != null) {
+            onNetworkCall.onComplete(false, "");
+            Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "No Internet Connection");
+        }
+    }
+
+    public void getDataRelease(int type, final String endPoint, Map<String, String> param
+            , RequestBody requestBody, MultipartBody.Part multipartBody, final OnNetworkCallSimple onNetworkCall) {
+        ApiInterfaceBasic apiInterface = getHostInterfaceBasic();
+        if (apiInterface != null) {
+            Logger.i("getData -- " + endPoint);
+            Call<String> call = getCall(type, apiInterface, endPoint, param, requestBody, multipartBody);
+            call.enqueue(new ResponseCallBackBasic(onNetworkCall, endPoint));
+        } else if (onNetworkCall != null) {
+            onNetworkCall.onComplete(false, "");
+            Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint);
+        }
+    }
+
+
+    private Call<String> getCall(int callType, ApiInterfaceBasic apiInterface, String endPoint, Map<String, String> param
+            , RequestBody requestBody, MultipartBody.Part multipartBody) {
+        Call<String> call;
+        switch (callType) {
+            case com.config.config.ConfigConstant.CALL_TYPE_POST:
+                call = apiInterface.postData(endPoint, param);
+                break;
+            case com.config.config.ConfigConstant.CALL_TYPE_POST_FORM:
+                call = apiInterface.postDataForm(endPoint, param);
+                break;
+            case com.config.config.ConfigConstant.CALL_TYPE_POST_FILE:
+                call = apiInterface.postDataForm(endPoint, param, requestBody, multipartBody);
+                break;
+            case com.config.config.ConfigConstant.CALL_TYPE_GET:
+            default:
+                call = apiInterface.getData(endPoint, param);
+                break;
+        }
+        return call;
+    }
+
+
     public ApiInterface getApiInterface() {
         return getHostInterface();
     }
 
     private ApiInterface getHostInterface() {
         return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebug).create(ApiInterface.class);
+    }
+
+    private ApiInterfaceBasic getHostInterfaceBasic() {
+        return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebug).create(ApiInterfaceBasic.class);
     }
 }
