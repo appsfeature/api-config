@@ -16,6 +16,8 @@ import com.config.util.ConfigPreferences;
 import com.config.util.ConfigUtil;
 import com.config.util.Logger;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.helper.util.GsonParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -239,8 +241,11 @@ public class ConfigManager {
                                 } else {
                                     sendBroadCastFailure();
                                 }
-                            } else
+                                loadHostSectionFromCache();
+                            } else {
                                 sendBroadCastFailure();
+                                loadHostSectionFromCache();
+                            }
                         } else
                             sendBroadCastFailure();
                     }
@@ -255,12 +260,22 @@ public class ConfigManager {
                                 sendBroadCastFailure();
                         } else
                             sendBroadCastFailure();
+
+                        loadHostSectionFromCache();
                     }
                 });
             } else {
                 isConfigLoading = false;
                 sendBroadCastFailure();
             }
+        }
+    }
+
+    private void loadHostSectionFromCache() {
+        String s = configPreferences.getString(com.config.config.ConfigConstant.CONFIG_HOST_SECTION);
+        if(!TextUtils.isEmpty(s)){
+            handleHostSection(GsonParser.fromJson(s, new TypeToken<List<HostSectionModel>>() {}));
+            isConfigLoaded = true;
         }
     }
 
@@ -524,7 +539,9 @@ public class ConfigManager {
             isConfigLoaded = true;
             configPreferences.putString(com.config.config.ConfigConstant.CONFIG_HOST, model.getConfig_host());
             configPreferences.putString(com.config.config.ConfigConstant.CONFIG_HOST_BACKUP, model.getBackup_host());
+            configPreferences.putString(com.config.config.ConfigConstant.CONFIG_HOST_SECTION, GsonParser.toJson(model.getHost_section(), new TypeToken<List<HostSectionModel>>() {}));
             handleHostSection(model.getHost_section());
+
             Logger.i("Config is loaded");
             apiJsonException = new HashMap<>();
             apiErrorCode = new HashMap<>();
