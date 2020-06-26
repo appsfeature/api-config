@@ -20,7 +20,7 @@ public class ConfigPreferences {
 
     public static SharedPreferences initSharedPreferenceObj(Context context){
         if ( sharedPreferences == null )
-            sharedPreferences = context.getSharedPreferences(context.getPackageName() , Context.MODE_PRIVATE);
+            sharedPreferences = context.getSharedPreferences(context.getPackageName() + "api-config", Context.MODE_PRIVATE);
 
         return sharedPreferences ;
     }
