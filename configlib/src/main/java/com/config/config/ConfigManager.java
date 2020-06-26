@@ -272,10 +272,13 @@ public class ConfigManager {
     }
 
     private void loadHostSectionFromCache() {
-        String s = configPreferences.getString(com.config.config.ConfigConstant.CONFIG_HOST_SECTION);
-        if(!TextUtils.isEmpty(s)){
-            handleHostSection(GsonParser.fromJson(s, new TypeToken<List<HostSectionModel>>() {}));
-            isConfigLoaded = true;
+        if(isLoadFromCache) {
+            String s = configPreferences.getString(com.config.config.ConfigConstant.CONFIG_HOST_SECTION);
+            if (!TextUtils.isEmpty(s)) {
+                handleHostSection(GsonParser.fromJson(s, new TypeToken<List<HostSectionModel>>() {
+                }));
+                isConfigLoaded = true;
+            }
         }
     }
 
@@ -667,6 +670,13 @@ public class ConfigManager {
 
     public ConfigManager setEnableConfigManager(boolean enableConfigManager) {
         this.isEnableConfigManager = enableConfigManager;
+        return this;
+    }
+
+    private boolean isLoadFromCache = false;
+
+    public ConfigManager setEnableLoadFromCache(boolean isLoadFromCache) {
+        this.isLoadFromCache = isLoadFromCache;
         return this;
     }
 
