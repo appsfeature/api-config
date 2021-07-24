@@ -44,7 +44,7 @@ public class ResponseCallBackSimple implements Callback<BaseModel> {
                     }
                 }else {
                     if (onNetworkCall != null) {
-                        onNetworkCall.onComplete(false, "");
+                        onNetworkCall.onComplete(false, response != null ? response.toString() : "");
                     }
                 }
             } else if (responseCode == INTERNAL_SERVER_ERROR || responseCode == NOT_FOUND
@@ -52,12 +52,12 @@ public class ResponseCallBackSimple implements Callback<BaseModel> {
                     || responseCode == GATEWAY_TIMEOUT) {
                 Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" );
                 if (onNetworkCall != null) {
-                    onNetworkCall.onComplete(false, "");
+                    onNetworkCall.onComplete(false, response != null ? response.toString() : "");
                 }
             }
         } else {
             if (onNetworkCall != null) {
-                onNetworkCall.onComplete(false, "");
+                onNetworkCall.onComplete(false, response != null ? response.toString() : "");
                 Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "Invalid response!");
             }
         }
@@ -66,7 +66,7 @@ public class ResponseCallBackSimple implements Callback<BaseModel> {
     @Override
     public void onFailure(Call<BaseModel> call, Throwable t) {
         if (onNetworkCall != null) {
-            onNetworkCall.onComplete(false, "");
+            onNetworkCall.onComplete(false, t != null ? t.toString() : "");
         }
     }
 

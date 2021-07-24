@@ -60,7 +60,7 @@ public class ResponseCallBack implements Callback<BaseModel> {
                     }
                 }else {
                     if (onNetworkCall != null) {
-                        onNetworkCall.onComplete(false, "");
+                        onNetworkCall.onComplete(false, response.toString());
                     }
                 }
             } else if (responseCode == INTERNAL_SERVER_ERROR || responseCode == NOT_FOUND
@@ -68,7 +68,7 @@ public class ResponseCallBack implements Callback<BaseModel> {
                     || responseCode == GATEWAY_TIMEOUT) {
                 Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "OnError : " + configManager.getRequestBody(call));
                 if (onNetworkCall != null) {
-                    onNetworkCall.onComplete(false, "");
+                    onNetworkCall.onComplete(false, response.toString());
                 }
                 if (configManager != null) {
                     String apiCall = configManager.getApiErrorCode().get(endPoint);
@@ -84,7 +84,7 @@ public class ResponseCallBack implements Callback<BaseModel> {
             }
         } else {
             if (onNetworkCall != null) {
-                onNetworkCall.onComplete(false, "");
+                onNetworkCall.onComplete(false, response != null ? response.toString() : "");
                 Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "ApiEndPoint:" + endPoint, "Invalid response!");
             }
         }
@@ -94,7 +94,7 @@ public class ResponseCallBack implements Callback<BaseModel> {
     public void onFailure(Call<BaseModel> call, Throwable t) {
 //        Logger.e(Logger.getClassPath(Thread.currentThread().getStackTrace()), "onFailure : " + configManager.getRequestBody(call));
         if (onNetworkCall != null) {
-            onNetworkCall.onComplete(false, "");
+            onNetworkCall.onComplete(false, t != null ? t.toString() : "");
         }
         if (t instanceof JSONException) {
             if (configManager != null) {
