@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import com.config.BuildConfig;
 import com.config.ConfigProvider;
 import com.config.network.NetworkMonitor;
+import com.config.network.download.ConfigDownloadListener;
+import com.config.network.download.DownloadProgressCallback;
 import com.config.util.ConfigConstant;
 import com.config.util.ConfigPreferences;
 import com.config.util.ConfigUtil;
@@ -87,6 +89,62 @@ public class ConfigManager {
             }
         }
         return apiInterface;
+    }
+
+    private final DownloadProgressCallback mProgressListener = new DownloadProgressCallback() {
+        @Override
+        public void update(long bytesRead, long contentLength, boolean done) {
+            try {
+                int progressUpdate = (int) ((bytesRead * 100) / contentLength);
+                if (mDownloadListener != null) {
+                    mDownloadListener.onProgressUpdate(progressUpdate);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    };
+    public ConfigDownloadListener mDownloadListener;
+
+    /**
+     * @param downloadListener  add Handler for show data on Main Thread
+     * @return Note. getting data in background thread.
+     */
+    public ConfigManager setDownloadListener(ConfigDownloadListener downloadListener) {
+        mDownloadListener = null;
+        this.mDownloadListener = downloadListener;
+        return this;
+    }
+
+    public ApiInterface getHostInterfaceSaved(String endPointHost) {
+        return getHostInterfaceSaved(endPointHost, false);
+    }
+
+    public ApiInterface getHostInterfaceSaved(String endPointHost, boolean isAddDownloadProgressListener) {
+        if (apiHostHashMap != null && !TextUtils.isEmpty(endPointHost) ) {
+            if (apiInterfaceHashMap != null && apiInterfaceHashMap.get(endPointHost) != null) {
+                return apiInterfaceHashMap.get(endPointHost);
+            } else {
+                ApiInterface apiInterface;
+                if(!isAddDownloadProgressListener){
+                    apiInterface = getHostInterface(endPointHost);
+                }else {
+                    apiInterface = getDownloadHostInterface(endPointHost);
+                }
+                apiInterfaceHashMap.put(endPointHost, apiInterface);
+                return apiInterface;
+            }
+        }
+        return null;
+    }
+
+    // used for download file with progress update
+    private ApiInterface getDownloadHostInterface(String endPointHost) {
+        if (apiInterfaceHashMap != null && apiInterfaceHashMap.get(endPointHost) != null) {
+            return apiInterfaceHashMap.get(endPointHost);
+        } else {
+            return RetrofitGenerator.getClient(endPointHost, securityCode, mProgressListener, isDebug).create(ApiInterface.class);
+        }
     }
 
     private ApiInterface getHostInterface(String endPointHost) {

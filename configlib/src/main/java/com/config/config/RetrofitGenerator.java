@@ -1,6 +1,8 @@
 package com.config.config;
 
 import com.config.BuildConfig;
+import com.config.network.download.DownloadProgressCallback;
+import com.config.network.download.DownloadProgressInterceptor;
 
 import java.io.IOException;
 
@@ -23,12 +25,15 @@ public class RetrofitGenerator {
     }
 
     public static Retrofit getClient(String host, String securityCode, boolean isDebug) {
+        return getClient(host, securityCode, null, isDebug);
+    }
+    public static Retrofit getClient(String host, String securityCode, DownloadProgressCallback progressListener, boolean isDebug) {
         Retrofit retrofit = null;
         try {
             retrofit = new Retrofit.Builder()
                     .baseUrl(host)
                     .addConverterFactory(GsonConverterFactory.create())
-                    .client(getHttpClient(securityCode, isDebug).build())
+                    .client(getHttpClient(securityCode, isDebug, progressListener).build())
                     .build();
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,7 +41,11 @@ public class RetrofitGenerator {
         return retrofit;
     }
 
-    private static OkHttpClient.Builder getHttpClient(final String securityCode, boolean isDebug) {
+    private static OkHttpClient.Builder getHttpClient(final String securityCode, boolean isDebug, DownloadProgressCallback progressListener) {
+        DownloadProgressInterceptor progressInterceptor = null;
+        if(progressListener != null) {
+            progressInterceptor =new DownloadProgressInterceptor(progressListener);
+        }
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .addInterceptor(new Interceptor() {
                     @Override
@@ -51,6 +60,9 @@ public class RetrofitGenerator {
                         return chain.proceed(request);
                     }
                 });
+        if(progressInterceptor != null){
+            builder.addInterceptor(progressInterceptor);
+        }
         if (isDebug) {
             builder.addInterceptor(loggingInterceptor);
         }
