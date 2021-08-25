@@ -121,10 +121,13 @@ public class ConfigManager {
     }
 
     public ApiInterface getHostInterfaceSaved(String endPointHost, boolean isAddDownloadProgressListener) {
-        if (apiHostHashMap != null && !TextUtils.isEmpty(endPointHost) ) {
+        if (!TextUtils.isEmpty(endPointHost) ) {
             if (apiInterfaceHashMap != null && apiInterfaceHashMap.get(endPointHost) != null) {
                 return apiInterfaceHashMap.get(endPointHost);
             } else {
+                if(apiInterfaceHashMap == null){
+                    apiInterfaceHashMap = new HashMap<>();
+                }
                 ApiInterface apiInterface;
                 if(!isAddDownloadProgressListener){
                     apiInterface = getHostInterface(endPointHost);
