@@ -1,15 +1,13 @@
-apply plugin: 'com.android.library'
-
-apply plugin: 'com.github.dcendents.android-maven'
-
-group='org.bitbucket.droidhelios'
+plugins {
+    id 'com.android.library'
+}
 
 android {
-    compileSdkVersion 30
+    compileSdk 31
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 30
+        minSdk 19
+        targetSdk 31
         versionCode 1
         versionName "2.0"
 
@@ -23,6 +21,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
 }
 
@@ -34,12 +36,12 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 //    implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompat"
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
 
     implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit_version"
     implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.retrofit_okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.ext.retrofit_okhttp_version"
 
-    implementation "org.bitbucket.android-dennislabs:helper:$rootProject.ext.helper"
+    implementation "org.bitbucket.android-dennislabs:helper:$rootProject.ext.helper_version"
 }
