@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         minSdk 19
-        targetSdk 31
+        targetSdk 33
         versionCode 1
         versionName "2.0"
 
@@ -43,5 +43,5 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.retrofit_okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.ext.retrofit_okhttp_version"
 
-    implementation "org.bitbucket.android-dennislabs:helper:$rootProject.ext.helper_version"
+    implementation "com.github.appsfeature:helper:$rootProject.ext.helper"
 }
