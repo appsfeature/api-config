@@ -16,7 +16,6 @@ allprojects {
     repositories {
         maven {
             url "https://jitpack.io"
-            credentials { username authToken }
         }
     }
     ext {
@@ -27,7 +26,7 @@ allprojects {
  
 
 #### Dependency
-[![](https://jitpack.io/v/org.bitbucket.amitresearchdev/config.svg)](https://jitpack.io/#org.bitbucket.amitresearchdev/config)
+[![](https://jitpack.io/v/appsfeature/api-config.svg)](https://jitpack.io/#appsfeature/api-config)
 ```gradle
 dependencies {
         implementation 'org.bitbucket.droidhelios:api-config:x.y'
