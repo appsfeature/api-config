@@ -2,6 +2,7 @@ package com.config.config;
 
 import com.config.network.download.DownloadProgressCallback;
 import com.config.network.download.DownloadProgressInterceptor;
+import com.config.util.UrlEncryption;
 
 import java.io.IOException;
 
@@ -27,7 +28,7 @@ public class RetrofitGenerator {
         Retrofit retrofit = null;
         try {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(host)
+                    .baseUrl(UrlEncryption.get(host))
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(getHttpClient(securityCode, isDebug, progressListener).build())
                     .build();

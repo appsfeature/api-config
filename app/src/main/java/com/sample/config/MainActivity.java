@@ -1,4 +1,4 @@
-package com.dennislabs.config;
+package com.sample.config;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;

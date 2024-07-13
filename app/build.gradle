@@ -3,8 +3,10 @@ plugins {
 }
 
 android {
-    namespace 'com.dennislabs.config'
+    namespace 'com.sample.config'
+
     compileSdk 34
+    
     defaultConfig {
         applicationId "latest.mock.test"
         minSdk 25

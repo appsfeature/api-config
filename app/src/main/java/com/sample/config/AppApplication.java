@@ -1,4 +1,4 @@
-package com.dennislabs.config;
+package com.sample.config;
 
 import com.config.config.ConfigManager;
 import com.config.util.ConfigUtil;

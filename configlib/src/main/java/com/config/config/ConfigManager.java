@@ -61,6 +61,7 @@ public class ConfigManager {
     private boolean isConfigLoaded = false;
     //    private ConnectivityReceiver mNetworkReceiver;
     private NetworkMonitor networkMonitor;
+    private String encDataKey;
 
     /*
      * get Host Alias
@@ -856,5 +857,14 @@ public class ConfigManager {
 
     private ApiInterfaceBasic getHostInterfaceBasic() {
         return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebugMode).create(ApiInterfaceBasic.class);
+    }
+
+    public String getEncDataKey() {
+        return encDataKey;
+    }
+
+    public ConfigManager setEncDataKey(String encDataKey) {
+        this.encDataKey = encDataKey;
+        return this;
     }
 }
