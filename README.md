@@ -4,11 +4,6 @@
 
 Android library that manages your app's networking with ease.
    
-## Setup
-Add the token to $HOME/.gradle/gradle.properties
-``` gradle
-    authToken=jp_9hht9fh0t4idhlm9m7v6u2mbj6
-```
 
 Add this to your project build.gradle
 ``` gradle
@@ -29,7 +24,7 @@ allprojects {
 [![](https://jitpack.io/v/appsfeature/api-config.svg)](https://jitpack.io/#appsfeature/api-config)
 ```gradle
 dependencies {
-        implementation 'org.bitbucket.droidhelios:api-config:x.y'
+        implementation 'com.github.appsfeature:api-config:x.y'
 }
 ```
 

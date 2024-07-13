@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 
-import com.config.BuildConfig;
 import com.config.ConfigProvider;
 import com.config.network.NetworkMonitor;
 import com.config.network.download.ConfigDownloadListener;
@@ -146,7 +145,7 @@ public class ConfigManager {
         if (apiInterfaceHashMap != null && apiInterfaceHashMap.get(endPointHost) != null) {
             return apiInterfaceHashMap.get(endPointHost);
         } else {
-            return RetrofitGenerator.getClient(endPointHost, securityCode, mProgressListener, isDebug).create(ApiInterface.class);
+            return RetrofitGenerator.getClient(endPointHost, securityCode, mProgressListener, isDebugMode).create(ApiInterface.class);
         }
     }
 
@@ -154,7 +153,7 @@ public class ConfigManager {
         if (apiInterfaceHashMap.get(endPointHost) != null) {
             return apiInterfaceHashMap.get(endPointHost);
         } else {
-            return RetrofitGenerator.getClient(endPointHost, securityCode, isDebug).create(ApiInterface.class);
+            return RetrofitGenerator.getClient(endPointHost, securityCode, isDebugMode).create(ApiInterface.class);
         }
     }
 
@@ -163,7 +162,7 @@ public class ConfigManager {
     }
 
     private String securityCode;
-    public boolean isDebug = false;
+    private boolean isDebugMode = false;
 
     public static ConfigManager getInstance() {
         if (configManager == null) {
@@ -173,7 +172,7 @@ public class ConfigManager {
     }
 
     public static ConfigManager getInstance(Context context, String securityCode) {
-        return getInstance(context, securityCode, BuildConfig.DEBUG);
+        return getInstance(context, securityCode, false);
     }
 
     public static ConfigManager getInstance(Context context, String securityCode, boolean isDebug) {
@@ -198,15 +197,15 @@ public class ConfigManager {
         context.sendBroadcast(new Intent(context.getPackageName() + com.config.config.ConfigConstant.CONFIG_FAILURE));
     }
 
-    private ConfigManager(Context context, String securityCode, boolean isDebug) {
-        init(context, securityCode, isDebug);
+    private ConfigManager(Context context, String securityCode, boolean isDebugMode) {
+        init(context, securityCode, isDebugMode);
     }
 
     private void init(Context context, String securityCode, boolean isDebug) {
         if (context != null) {
             this.context = context;
             this.securityCode = securityCode;
-            this.isDebug = isDebug;
+            this.isDebugMode = isDebug;
             configPreferences = new com.config.config.ConfigPreferences(context);
             networkMonitor = getNetworkMonitor();
         }
@@ -268,7 +267,7 @@ public class ConfigManager {
         if (isEnableConfigManager && ConfigUtil.isConnected(context) && !isConfigLoading) {
             isConfigLoading = true;
             String host = isMain ? getHostConfigPath() : getBackupHostConfigPath();
-            Retrofit retrofit = RetrofitGenerator.getClient(host, securityCode, isDebug);
+            Retrofit retrofit = RetrofitGenerator.getClient(host, securityCode, isDebugMode);
             Call<ConfigModel> call = null;
             if (retrofit != null) {
                 if (isMain) {
@@ -447,7 +446,7 @@ public class ConfigManager {
                     }
                 }
                 if (isConfigLoaded) {
-                    if (BuildConfig.DEBUG) {
+                    if (isDebugMode) {
                         getDataDebug(type, host, endPoint, param, requestBody, multipartBody, onNetworkCall);
                     } else {
                         getDataRelease(type, host, endPoint, param, requestBody, multipartBody, onNetworkCall);
@@ -590,6 +589,15 @@ public class ConfigManager {
         ConfigManager.isCallConfig = isCallConfig;
     }
 
+    public ConfigManager setDebugMode(boolean isDebugMode) {
+        this.isDebugMode = isDebugMode;
+        return this;
+    }
+
+    public boolean isDebugMode() {
+        return isDebugMode;
+    }
+
     public interface OnNetworkCall {
         void onComplete(boolean status, String data);
     }
@@ -690,7 +698,7 @@ public class ConfigManager {
                         ConfigPreferences.setBaseUrl_3(context, model.getHost());
                     }
                     configPreferences.putString(model.getTitle(), model.getHost());
-                    apiInterface = RetrofitGenerator.getClient(model.getHost(), securityCode, isDebug).create(ApiInterface.class);
+                    apiInterface = RetrofitGenerator.getClient(model.getHost(), securityCode, isDebugMode).create(ApiInterface.class);
                     apiInterfaceHashMap.put(model.getHost(), apiInterface);
                     handleApiHost(model.getTitle(), model.getApi_host());
                 }
@@ -843,10 +851,10 @@ public class ConfigManager {
     }
 
     private ApiInterface getHostInterface() {
-        return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebug).create(ApiInterface.class);
+        return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebugMode).create(ApiInterface.class);
     }
 
     private ApiInterfaceBasic getHostInterfaceBasic() {
-        return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebug).create(ApiInterfaceBasic.class);
+        return RetrofitGenerator.getClient(getHostConfigPath(), securityCode, isDebugMode).create(ApiInterfaceBasic.class);
     }
 }

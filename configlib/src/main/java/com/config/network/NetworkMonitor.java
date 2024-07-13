@@ -1,18 +1,9 @@
 package com.config.network;
 
 import android.app.Activity;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.os.Build;
-import android.util.SparseArray;
-import android.util.SparseIntArray;
-
-import androidx.annotation.RequiresApi;
 
 import com.config.config.ConfigManager;
 
@@ -116,11 +107,7 @@ public class NetworkMonitor {
      */
     public void register(Activity activity) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                scheduleJob(activity);
-            } else {
-                registerConnectivityReceiver(activity);
-            }
+            registerConnectivityReceiver(activity);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,11 +119,7 @@ public class NetworkMonitor {
      */
     public void unregister(Activity activity) {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                stopService(activity);
-            } else {
-                unregisterConnectivityReceiver(activity);
-            }
+            unregisterConnectivityReceiver(activity);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -145,9 +128,6 @@ public class NetworkMonitor {
     void refreshConfig(Context context, boolean isConnected) {
         if (ConfigManager.getInstance() != null && !isConfigLoaded) {
             ConfigManager.getInstance().refreshConfig();
-            if (context != null) {
-                BroadcastManager.sendBroadcast(context, BroadcastManager.ACTION_NAME_UNIQUE, isConnected);
-            }
         }
         updateCallback(isConnected);
     }
@@ -165,40 +145,6 @@ public class NetworkMonitor {
             refreshConnectivityListener();
         }
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void scheduleJob(Activity activity) {
-        JobInfo myJob = new JobInfo.Builder(0, new ComponentName(activity, NetworkSchedulerService.class))
-                .setRequiresCharging(true)
-                .setMinimumLatency(1000)
-                .setOverrideDeadline(2000)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .build();
-//                .setPersisted(true)
-
-        JobScheduler jobScheduler = (JobScheduler) activity.getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.schedule(myJob);
-        startService(activity);
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void startService(Activity activity) {
-//        super.onStart();
-        Intent startServiceIntent = new Intent(activity, NetworkSchedulerService.class);
-        activity.startService(startServiceIntent);
-    }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void stopService(Activity activity) {
-        // A service can be "started" and/or "bound". In this case, it's "started" by this Activity
-        // and "bound" to the JobScheduler (also called "Scheduled" by the JobScheduler). This call
-        // to stopService() won't prevent scheduled jobs to be processed. However, failing
-        // to call stopService() would keep it alive indefinitely.
-        activity.stopService(new Intent(activity, NetworkSchedulerService.class));
-//        super.onStop();
-    }
-
 
     private void registerConnectivityReceiver(final Context context) {
         mNetworkReceiver = new ConnectivityReceiver(new ConnectivityListener() {

@@ -20,9 +20,7 @@ import retrofit2.http.QueryMap;
 import retrofit2.http.Streaming;
 import retrofit2.http.Url;
 
-/**
- * Created by Amit on 3/29/2018.
- */
+
 
 public interface ApiInterface {
 

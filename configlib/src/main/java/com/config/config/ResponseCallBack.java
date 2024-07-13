@@ -12,10 +12,6 @@ import retrofit2.Response;
 import static com.config.config.ConfigManager.JSON_EXCEPTION;
 
 
-/**
- * Created by Amit on 4/10/2018.
- */
-
 public class ResponseCallBack implements Callback<BaseModel> {
 
     private ConfigManager.OnNetworkCall onNetworkCall;

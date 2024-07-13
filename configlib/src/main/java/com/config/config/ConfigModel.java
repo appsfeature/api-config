@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * Created by Amit on 3/28/2018.
- */
-
 public class ConfigModel {
     @SerializedName("backup_host")
     @Expose

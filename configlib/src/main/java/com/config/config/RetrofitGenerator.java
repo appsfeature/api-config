@@ -1,6 +1,5 @@
 package com.config.config;
 
-import com.config.BuildConfig;
 import com.config.network.download.DownloadProgressCallback;
 import com.config.network.download.DownloadProgressInterceptor;
 
@@ -14,14 +13,11 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Amit on 3/28/2018.
- */
 
 public class RetrofitGenerator {
 
     public static Retrofit getClient(String host, String securityCode) {
-        return getClient(host, securityCode, BuildConfig.DEBUG);
+        return getClient(host, securityCode, ConfigManager.getInstance().isDebugMode());
     }
 
     public static Retrofit getClient(String host, String securityCode, boolean isDebug) {

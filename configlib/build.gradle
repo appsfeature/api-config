@@ -1,13 +1,15 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
 
 android {
-    compileSdk 33
+    namespace 'com.config'
+    compileSdk 34
 
     defaultConfig {
-        minSdk 19
-        targetSdk 33
+        minSdk 25
+        targetSdk 34
         versionCode 1
         versionName "2.0"
 
@@ -23,26 +25,28 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
     }
 
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-
-//    implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompat"
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.1.0'
+    
+    implementation "androidx.annotation:annotation:1.8.0"
 
     implementation "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit_version"
     implementation "com.squareup.okhttp3:okhttp:$rootProject.ext.retrofit_okhttp_version"
     implementation "com.squareup.okhttp3:logging-interceptor:$rootProject.ext.retrofit_okhttp_version"
 
-    implementation "com.github.appsfeature:helper:$rootProject.ext.helper"
+    implementation "com.github.appsfeature:helper:$rootProject.ext.helper_version"
+    implementation "org.bitbucket.appsfeature:core:$rootProject.ext.core_version"
 }

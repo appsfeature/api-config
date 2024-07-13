@@ -1,8 +1,5 @@
 package com.config.config;
 
-/**
- * Created by Amit on 3/28/2018.
- */
 
 public interface ConfigConstant {
 

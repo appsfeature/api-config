@@ -3,9 +3,6 @@ package com.config.config;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by Amit on 3/28/2018.
- */
 
 public class ApiHostModel {
     @SerializedName("api_name")

@@ -1,14 +1,14 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.gms.google-services'
 }
 
 android {
-    compileSdk 33
+    namespace 'com.dennislabs.config'
+    compileSdk 34
     defaultConfig {
         applicationId "latest.mock.test"
-        minSdk 19
-        targetSdk 33
+        minSdk 25
+        targetSdk 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -20,20 +20,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompat"
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(':configlib')
     implementation 'com.android.support:multidex:1.0.3'
+
+    implementation "com.github.appsfeature:helper:$rootProject.ext.helper_version"
+    implementation "org.bitbucket.appsfeature:core:$rootProject.ext.core_version"
 
 }

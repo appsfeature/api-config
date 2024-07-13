@@ -2,9 +2,7 @@ package com.config.util;
 
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.config.BuildConfig;
 import com.config.config.ConfigManager;
 
 
@@ -23,7 +21,7 @@ public class Logger {
 
     public static void e(String s) {
         if ( ConfigManager.getInstance() != null ) {
-            if (ConfigManager.getInstance().isDebug) {
+            if (ConfigManager.getInstance().isDebugMode()) {
                 Log.e(TAG, LINE_BREAK_START);
                 Log.e(TAG, s);
                 Log.e(TAG, LINE_BREAK_END);
@@ -33,7 +31,7 @@ public class Logger {
 
     public static void i(String s) {
         if ( ConfigManager.getInstance() != null ) {
-            if (ConfigManager.getInstance().isDebug) {
+            if (ConfigManager.getInstance().isDebugMode()) {
                 Log.d(TAG, s);
             }
         }
@@ -41,7 +39,7 @@ public class Logger {
 
     public static void e(String q ,String s ) {
         if ( ConfigManager.getInstance() != null ) {
-            if (ConfigManager.getInstance().isDebug) {
+            if (ConfigManager.getInstance().isDebugMode()) {
                 Log.d(TAG, LINE_BREAK_START);
                 Log.d(TAG, q + " : " + s);
                 Log.d(TAG, LINE_BREAK_END);
@@ -50,7 +48,7 @@ public class Logger {
     }
 
     public static void d(String s) {
-        if (ConfigManager.getInstance().isDebug) {
+        if (ConfigManager.getInstance().isDebugMode()) {
             Log.d(TAG, LINE_BREAK_START);
             Log.d(TAG, s);
             Log.d(TAG, LINE_BREAK_END);
@@ -59,7 +57,7 @@ public class Logger {
 
     public static void d(String... s) {
         if ( ConfigManager.getInstance() != null ) {
-            if (ConfigManager.getInstance().isDebug) {
+            if (ConfigManager.getInstance().isDebugMode()) {
                 Log.d(TAG, LINE_BREAK_START);
                 for (String m : s) {
                     Log.d(TAG, m);
@@ -71,7 +69,7 @@ public class Logger {
 
     public static void e(String... s) {
         if ( ConfigManager.getInstance() != null ) {
-            if (ConfigManager.getInstance().isDebug) {
+            if (ConfigManager.getInstance().isDebugMode()) {
                 Log.e(TAG_OK_HTTP, LINE_BREAK_START);
                 for (String m : s) {
                     Log.e(TAG_OK_HTTP, m);

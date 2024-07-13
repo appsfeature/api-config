@@ -3,9 +3,6 @@ package com.config.config;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-/**
- * Created by Amit on 3/28/2018.
- */
 
 public class ConfigPreferences {
 

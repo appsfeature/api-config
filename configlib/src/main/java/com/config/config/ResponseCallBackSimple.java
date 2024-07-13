@@ -10,11 +10,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-
-/**
- * Created by Amit on 4/10/2018.
- */
-
 public class ResponseCallBackSimple implements Callback<BaseModel> {
 
     private ConfigManager.OnNetworkCall onNetworkCall;

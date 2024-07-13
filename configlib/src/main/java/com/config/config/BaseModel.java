@@ -3,10 +3,6 @@ package com.config.config;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by Amit on 3/29/2018.
- */
-
 public class BaseModel {
 
     @SerializedName("status")
